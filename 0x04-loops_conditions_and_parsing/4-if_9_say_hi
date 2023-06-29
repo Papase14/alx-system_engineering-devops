@@ -3,12 +3,11 @@
 # displays Best School and then Hi on a new line. use while and if
 
 i=1
-num=9
 
 while [ $i -le 10 ]
 do
   echo "Best School"
-  if [ $i == $num ]
+  if [ $i == 9 ]
   then
     echo "Hi"
   fi
