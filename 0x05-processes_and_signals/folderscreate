@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+folders=(
+    "Corporate Environmental Policy: VGR-MAN-POL-0031 ( Version 16)"
+    "Occupational Health and Safety Policy: VGR-MAN-POL-0066 ( Version 8)"
+    "Health Safety and Environmental Governance Standard: VGR- MAN-STD-0001 ( Version 9)"
+    "HSE System Performance Monitoring and Measurement Standard: VGR-MAN-0002 ( Version 7)"
+    "Health Safety and Environment Risk Assessment and Control Standard: VGR-MAN-STD-0003 ( Version 8)"
+    "Working at Heights Standard: VGR- MAN- STD-0006  ( Version 4)"
+    "Absolute Rules Standard: VGR-MAN-STD-0008 ( Version 6)"
+    "Incident Reporting and Investigation Standard: VGR-MAN-STD-0009 ( Version 8)"
+    "Occupational Driving Standard: VGR-MAN-STD-0010 ( Version 7)"
+    "Ergonomics in the Workplace Standard: VGR-MAN-STD-0012 (Version 4)"
+)
+
+
+for i in "${folders[@]}"
+do 
+    if [ -d "$i" ]; then
+        echo "Folder $i already exists."
+    else
+        mkdir "./$i"
+        echo "Folder $i created."
+    fi
+done
