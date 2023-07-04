@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
-# Script that accepts one argument and pass it to a regular expression matching method
+# Script matches string that has hb followed by at least 2
+# occurences of t (at most 5) then n
 
 puts ARGV[0].scan(/hbt{2,5}n/).join
