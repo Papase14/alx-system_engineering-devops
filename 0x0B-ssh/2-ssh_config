@@ -1,0 +1,6 @@
+# SSH Config File
+
+Host 52.87.231.48
+    IdentityFile ~/.ssh/school
+    PreferredAuthentications publickey
+    PasswordAuthentication no
