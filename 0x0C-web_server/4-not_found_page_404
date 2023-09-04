@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
-# Configures a new ubuntu machine by installing
+# Configures a new Ubuntu machine by installing
 # Nginx where it should be listening on port 80
-# Serve a page that would return a Hello World string
+# Serve a custom 404 page with the string "Ceci n'est pas une page"
 
 echo -e "Updating and installing Nginx.\n"
 sudo apt-get update -y -qq && \
-	 sudo apt-get install nginx -y
+         sudo apt-get install nginx -y
 
 echo -e "\nSetting up some minor stuff.\n"
 
-# starting nginx service
+# Starting nginx service
 sudo service nginx start
 
-# allowing nginx on firewall
+# Allowing nginx on firewall
 sudo ufw allow 'Nginx HTTP'
 
 # Give the user ownership to website files for easy editing
@@ -22,17 +22,37 @@ sudo chmod -R 755 /var/www
 # Backup default index
 cp /var/www/html/index.nginx-debian.html /var/www/html/index.nginx-debian.html.bckp
 
-# Creating new index
-echo -e "Hello World!" > /var/www/html/index.nginx-debian.html
+# Creating a custom 404 page with the string "Ceci n'est pas une page"
+echo -e "<html><head><title>404 Not Found</title></head><body><h1>404 Not Found</h1><p>Ceci n'est pas une page</p></body></html>" > /var/www/html/404.html
 
-# Setting up /redirect_me to a youtube video
-sudo sed -i '24i\	rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;' /etc/nginx/sites-available/default
+# Configure Nginx to use the custom 404 page
+sudo tee /etc/nginx/sites-available/custom-404 <<EOF
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
 
-# Set up a 404 page
-echo "Ceci n'est pas une page" >> /var/www/html/error_404.html
-sudo sed -i '25i\	error_page 404 /error_404.html;' /etc/nginx/sites-available/default
+    root /var/www/html;
+    server_name _;
 
-# Restarting nginx
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
+
+    error_page 404 /404.html;
+    location = /404.html {
+        internal;
+    }
+}
+EOF
+
+# Enable the custom 404 site and disable the default site
+sudo ln -s /etc/nginx/sites-available/custom-404 /etc/nginx/sites-enabled/
+sudo rm /etc/nginx/sites-enabled/default
+
+# Test Nginx configuration
+sudo nginx -t
+
+# Restart Nginx
 sudo service nginx restart
 
 echo -e "\nCompleted.\n"
