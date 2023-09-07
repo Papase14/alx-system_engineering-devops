@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# print domains and subdomains
+
+ () {
+    domain_details
+    dig "$1" | grep -A1 'ANSWER SECTION:' | sed -r "s/$1./$2/g" | awk -F" " ' NR==2 { print "The subdomain " $1 " is a " $4 " record and points to " $5 }'
+}
+
+if [ "$#" -eq 2 ]
+then
+     "$2.$1" "$2"
+     domain_details
+else
+     "www.$1" "www"
+     domain_details
+     "lb-01.$1" "lb-01"
+     domain_details
+     "web-01.$1" "web-01"
+     domain_details
+     "web-02.$1" "web-02"
+     domain_details
+fi
