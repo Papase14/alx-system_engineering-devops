@@ -3,9 +3,9 @@
 gather employee data from API and export to CSV
 """
 
+import csv
 import re
 import requests
-import csv
 import sys
 
 REST_API = "https://jsonplaceholder.typicode.com"
@@ -25,7 +25,12 @@ def export_to_csv(employee_id, emp_name, completed_tasks):
     filename = f"{employee_id}.csv"
     with open(filename, mode="w", newline="") as file:
         writer = csv.writer(file, quoting=csv.QUOTE_ALL)
-        writer.writerow(["USER_ID", "USERNAME", "TASK_COMPLETED_STATUS", "TASK_TITLE"])
+        writer.writerow(
+            [
+                "USER_ID", "USERNAME",
+                "TASK_COMPLETED_STATUS", "TASK_TITLE"
+            ]
+        )
         for task in completed_tasks:
             writer.writerow(
                 [employee_id, emp_name, str(task["completed"]), task["title"]]
