@@ -1,28 +1,37 @@
 #!/usr/bin/python3
 """
-gather employee data from API
+    A python script that, using a REST API, for a given
+    employee ID, returns information about his/her TODO
+    list progress.
 """
 
-import re
-import requests
-import sys
 
-REST_API = "https://jsonplaceholder.typicode.com"
+import requests
+from sys import argv
+
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        if re.fullmatch(r"\d+", sys.argv[1]):
-            id = int(sys.argv[1])
-            req = requests.get("{}/users/{}".format(REST_API, id)).json()
-            task_req = requests.get("{}/todos".format(REST_API)).json()
-            emp_name = req.get("name")
-            tasks = list(filter(lambda x: x.get("userId") == id, task_req))
-            completed_tasks = list(filter(lambda x: x.get("completed"), tasks))
-            print(
-                "Employee {} is done with tasks({}/{}):".format(
-                    emp_name, len(completed_tasks), len(tasks)
-                )
-            )
-            if len(completed_tasks) > 0:
-                for task in completed_tasks:
-                    print("\t {}".format(task.get("title")))
+    emp_Id = argv[1]
+    emp_name = (
+        requests.get("https://jsonplaceholder.typicode.com/users/{}".format(emp_Id))
+        .json()
+        .get("name")
+    )
+
+    c_tasks = []  # list of completed tasks
+    r = requests.get(
+        "https://jsonplaceholder.typicode.com/users/{}/todos".format(emp_Id)
+    ).json()
+    tasks = len(r)
+    for task in r:
+        if task["completed"]:
+            c_tasks.append(task["title"])
+
+    print(
+        "Employee {} is done with tasks({:d}/{:d}):".format(
+            emp_name, len(c_tasks), tasks
+        )
+    )
+
+    for item in c_tasks:
+        print("\t {}".format(item))
