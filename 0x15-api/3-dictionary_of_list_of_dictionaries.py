@@ -24,7 +24,9 @@ tasks_response = requests.get("https://jsonplaceholder.typicode.com/todos")
 tasks_data = tasks_response.json()
 
 # Filter tasks for the specified user
-user_tasks = [task for task in tasks_data if task["userId"] == int(employee_id)]
+user_tasks = [
+    task for task in tasks_data if task["userId"] == int(employee_id)
+]
 
 # Create a dictionary to store the user's tasks
 user_task_dict = {
