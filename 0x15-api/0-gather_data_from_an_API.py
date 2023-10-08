@@ -1,42 +1,40 @@
 #!/usr/bin/python3
-"""script for parsing web data from an api
 """
+script for parsing web data from an api
+"""
+import json
 import requests
 import sys
 
 
-def get_employee_todo_list_progress(employee_id):
-    base_url = "https://jsonplaceholder.typicode.com"
+if __name__ == "__main__":
+    num_done, num_tasks = 0, 0
+    userId = sys.argv[1]
 
-    # Fetch user info
-    user_url = f"{base_url}/users/{employee_id}"
-    response = requests.get(user_url)
-    user_data = response.json()
+    # create Response object for specific user and that user's tasks
+    url = "https://jsonplaceholder.typicode.com/users/{}".format(userId)
+    user_response = requests.get(url)
 
-    # Fetch user's todos
-    todos_url = f"{base_url}/todos?userId={employee_id}"
-    response = requests.get(todos_url)
-    todos_data = response.json()
+    url = "https://jsonplaceholder.typicode.com/todos/?userId={}".format(userId)
+    todo_response = requests.get(url)
 
-    # Calculate progress
-    total_tasks = len(todos_data)
-    completed_tasks = sum(1 for todo in todos_data if todo["completed"])
+    # create Dictionary objects from response objects
+    user_info = json.loads(user_response.text)
+    todo_info = json.loads(todo_response.text)
 
-    # Print progress information
+    employee_name = user_info["name"]
+
+    for task in todo_info:
+        num_tasks += 1
+        if task["completed"]:
+            num_done += 1
+
     print(
-        f'Employee {user_data["name"]} is done with' +
-        f'tasks({completed_tasks}/{total_tasks}):'
+        "Employee {} is done with tasks({}/{}):".format(
+            employee_name, num_done, num_tasks
+        )
     )
 
-    for todo in todos_data:
-        if todo["completed"]:
-            print(f'\t{todo["title"]}')
-
-
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python script_name.py <employee_id>")
-        sys.exit(1)
-
-    employee_id = int(sys.argv[1])
-    get_employee_todo_list_progress(employee_id)
+    for task in todo_info:
+        if task["completed"]:
+            print("\t {}".format(task["title"]))
