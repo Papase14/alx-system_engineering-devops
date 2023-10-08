@@ -5,3 +5,16 @@ cp /etc/nginx/sites-enabled/default /etc/nginx/sites-available/default
 service nginx stop
 pkill nginx
 service nginx start
+
+cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak
+
+ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/
+
+service nginx restart
+
+# Check if Nginx is running and listening on port 80
+if sudo netstat -tuln | grep -q ':80 '; then
+    echo "Nginx is running and listening on port 80."
+else
+    echo "Nginx is not running or not listening on port 80."
+fi
