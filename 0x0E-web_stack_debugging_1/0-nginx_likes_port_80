@@ -6,8 +6,6 @@ service nginx stop
 pkill nginx
 service nginx start
 
-cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak
-
 ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/
 
 service nginx restart
