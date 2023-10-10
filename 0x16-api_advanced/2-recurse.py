@@ -5,57 +5,40 @@
     a given subreddit.
 """
 import requests
-from typing import List, Optional
+from typing import List
 
 
 def recurse(
-    subreddit: str, hot_list: List[str] = [], after: Optional[str] = None
+    subreddit: str, hot_list: List[str] = [], after: str = "", count: int = 0
 ) -> List[str]:
     """
-    Returns a list of the hottest posts of a subreddit or None.
+    Returns a list of titles of all hot posts on a given subreddit.
 
     Args:
-    - subreddit (str): The name of the subreddit to retrieve the
-    hottest posts from.
-    - hot_list (List[str]): The list of hottest posts.
-    - after (Optional[str]): The 'after' parameter for pagination.
+        subreddit (str): The name of the subreddit to retrieve hot posts from.
+        hot_list (List[str], optional): A list to store the titles of the hot posts (default is an empty list).
+        after (str, optional): The ID of the last post in the previous batch (default is an empty string).
+        count (int, optional): The total number of posts retrieved so far (default is 0).
 
     Returns:
-    - List[str]: A list of child posts extracted from the hottest
-    posts of the given subreddit.
+        List[str]: A list of strings containing the titles of all hot posts on the given subreddit.
     """
-    user_agent = {"User-Agent": "/u/Suspicious-Jelly920"}
-    url = f"https://api.reddit.com/r/{subreddit}/hot?after={after}"
-    response = requests.get(url, headers=user_agent)
+    url = f"https://www.reddit.com/r/{subreddit}/hot/.json"
+    headers = {"User-Agent": "/u/Suspicious-Jelly920"}
+    params = {"after": after, "count": count, "limit": 100}
+    response = requests.get(url, headers=headers, params=params, allow_redirects=False)
 
-    if response.status_code == 200:
-        data = response.json()["data"]
-        hottest = data["children"]
-        after = data["after"]
+    if response.status_code == 404:
+        return None
 
-        if after is None:
-            hot_list.extend(get_children(hottest, len(hottest)))
-            return hot_list
+    data = response.json().get("data")
+    after = data.get("after")
+    count += data.get("dist")
 
-        hot_list.extend(recurse(subreddit, hot_list, after=after))
-        hot_list.extend(get_children(hottest, len(hottest)))
+    for child in data.get("children"):
+        hot_list.append(child.get("data").get("title"))
+
+    if after is not None:
+        return recurse(subreddit, hot_list, after, count)
 
     return hot_list
-
-
-def get_children(hottest: List[dict], count: int) -> List[str]:
-    """
-    Extracts the list of child posts from the hottest posts.
-
-    Args:
-    - hottest (List[dict]): The list of hottest posts.
-    - count (int): The number of hottest posts.
-
-    Returns:
-    - List[str]: A list of child posts extracted from the hottest
-    posts of the given subreddit.
-    """
-    children = []
-    for i in range(count):
-        children.append(hottest[i]["data"]["title"])
-    return children
