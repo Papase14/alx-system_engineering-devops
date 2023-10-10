@@ -31,10 +31,7 @@ def recurse(
     url = f"https://www.reddit.com/r/{subreddit}/hot/.json"
     headers = {"User-Agent": "/u/Suspicious-Jelly920"}
     params = {"after": after, "count": count, "limit": 100}
-    response = requests.get(url,
-                            headers=headers,
-                            params=params,
-                            allow_redirects=False)
+    response = requests.get(url, headers=headers, params=params, allow_redirects=False)
 
     if response.status_code == 404:
         return None
