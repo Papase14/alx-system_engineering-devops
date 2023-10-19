@@ -24,4 +24,9 @@ server {
         # as directory, then fall back to displaying a 404.
         try_files $uri $uri/ =404;
      }
+    
+    error_page 404 /error_404.html;            
+    location = /error_404.html {
+        internal;
+    }
 }
