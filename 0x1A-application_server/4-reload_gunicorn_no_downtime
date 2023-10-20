@@ -1,1 +1,13 @@
-Lets see
+#!/bin/bash
+
+# Check if Gunicorn is running
+if ps aux | grep -q '[g]unicorn.*web_flask.0-hello_route:app'; then
+    # Find the Gunicorn master process ID
+    master_pid=$(ps aux | grep '[g]unicorn.*web_flask.0-hello_route:app' | awk '{print $2}')
+    echo "Reloading Gunicorn (master PID: $master_pid)"
+    # Send the HUP signal to the master process
+    kill -HUP "$master_pid"
+    echo "Gunicorn reloaded gracefully."
+else
+    echo "Gunicorn is not running."
+fi
